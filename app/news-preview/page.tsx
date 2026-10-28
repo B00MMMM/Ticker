@@ -22,8 +22,12 @@ function PreviewContent() {
   const [switchIndex, setSwitchIndex] = useState(0);
   const [switchPhase, setSwitchPhase] = useState<"in" | "out">("in");
   const switchSegments = useMemo(() => {
-    const segments = ticker.split(/[.!?।]+/u).map((segment) => segment.trim()).filter(Boolean);
+    const segments = ticker.match(/[^:,]+[:,]+|[^:,]+$/gu)?.map((segment) => segment.trim()).filter(Boolean) ?? [];
     return segments.length ? segments : [ticker];
+  }, [ticker]);
+  useEffect(() => {
+    setSwitchIndex(0);
+    setSwitchPhase("in");
   }, [ticker]);
   useEffect(() => {
     if (tickerType !== "switch") return;
