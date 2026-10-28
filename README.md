@@ -12,17 +12,65 @@ TickerDesk is a Malayalam-first newsroom workspace for turning source announceme
 - Dark broadcast preview and validated JSON export
 - Per-draft machine-readable JSON export for newsroom software
 
-## Run locally
+## Setup
 
-Prerequisites: Node.js 18.17+ and a Groq API key.
+### Prerequisites
+
+- Node.js 18.17 or newer
+- npm (included with Node.js)
+- A [Groq API key](https://console.groq.com/keys) for AI-assisted ticker generation
+
+### Install and configure
+
+From the project directory:
 
 ```bash
 npm install
-copy .env.example .env.local
+```
+
+Create a local environment file from the provided template:
+
+```bash
+# macOS/Linux
+cp .env.example .env.local
+
+# Windows PowerShell
+Copy-Item .env.example .env.local
+```
+
+Open `.env.local` and set the API key:
+
+```env
+GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=openai/gpt-oss-20b
+```
+
+`GROQ_API_KEY` is required for AI generation. `GROQ_MODEL` is optional and defaults to `openai/gpt-oss-20b`; model availability can change, so set it to another model available to your Groq account when needed. Never commit `.env.local` or share the API key. The key is read only by the server route and is not exposed to browser code.
+
+### Start the development server
+
+```bash
 npm run dev
 ```
 
-Set `GROQ_API_KEY` in `.env.local`. The default model is `openai/gpt-oss-20b`, which is suitable for free-tier testing, but Groq model availability can change. You can override it with `GROQ_MODEL` if another model is available to your account. The API key is only read by the server route and is never exposed to browser code. If it is missing, enable the explicitly labelled Demo mode to test the workflow.
+Open [http://localhost:3000](http://localhost:3000) in a browser. The main newsroom workspace is available at `/`, and the ticker visual preview is available at `/news-preview`.
+
+If `GROQ_API_KEY` is not configured, enable the explicitly labelled **Demo mode** in the workspace to test the editorial workflow without making AI requests.
+
+### Verify the project
+
+Run the production build and type check before deploying:
+
+```bash
+npm run typecheck
+npm run build
+```
+
+To run the production build locally:
+
+```bash
+npm run start
+```
 
 ## Import formats
 
