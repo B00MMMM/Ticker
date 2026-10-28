@@ -67,6 +67,19 @@ export default function Home() {
     });
   }
 
+  function deleteRecord(id: string) {
+    setRecords((current) => current.filter((item) => item.id !== id));
+    setNotice("Draft removed from the queue.");
+  }
+
+  function openNewsPreview(record: TickerRecord) {
+    const params = new URLSearchParams({
+      ticker: record.ticker || record.sourceAnnouncement,
+      title: record.sourceTitle || "TickerDesk News"
+    });
+    window.open(`/news-preview?${params.toString()}`, "_blank", "noopener,noreferrer");
+  }
+
   function exportApproved() {
     const tickers = records.filter((record) => record.status === "approved" && canApprove(record) && !record.isGenerating).map((record, index) => ({
       id: record.id, order: index + 1, sourceTitle: record.sourceTitle, sourceAnnouncement: record.sourceAnnouncement, ticker: record.ticker, status: "approved" as const
@@ -130,9 +143,9 @@ export default function Home() {
           <div className="queue-heading"><div><div className="eyebrow">02 / EDITORIAL QUEUE</div><h2>Review and refine <span>{records.length} sources</span></h2></div>{notice && <div className="notice">{notice}</div>}</div>
           {!records.length ? <div className="empty panel"><div className="empty-icon">✦</div><h3>Your queue is ready</h3><p>Add an announcement or load the fictional samples to begin production.</p></div> : records.map((record, index) => (
             <article className={`review-card ${record.status}`} key={record.id}>
-              <div className="card-top"><span className="position">#{String(index + 1).padStart(2, "0")}</span><span className={`status ${record.status}`}>{record.status.replace("_", " ")}</span><div className="card-actions"><button title="Move up" disabled={index === 0} onClick={() => move(record.id, -1)}>↑</button><button title="Move down" disabled={index === records.length - 1} onClick={() => move(record.id, 1)}>↓</button></div></div>
+              <div className="card-top"><span className="position">#{String(index + 1).padStart(2, "0")}</span><span className={`status ${record.status}`}>{record.status.replace("_", " ")}</span><div className="card-actions"><button title="Move up" disabled={index === 0} onClick={() => move(record.id, -1)}>↑</button><button title="Move down" disabled={index === records.length - 1} onClick={() => move(record.id, 1)}>↓</button><button className="delete-button" title="Delete draft" aria-label="Delete draft" onClick={() => deleteRecord(record.id)}>⌫</button></div></div>
               {record.sourceTitle && <h3>{record.sourceTitle}</h3>}<div className="source-box"><span className="label">SOURCE</span><p>{record.sourceAnnouncement}</p></div>
-              <div className="ticker-edit"><div className="ticker-label"><span>GENERATED TICKER</span><span className={countWords(record.ticker) > 10 ? "over" : ""}>{countWords(record.ticker)}/10 words</span></div><textarea value={record.ticker} onChange={(event) => updateTicker(record.id, event.target.value)} placeholder="Generate a ticker or write one manually…" rows={2} /><div className="card-footer"><div>{record.generationError && <span className="error-inline">{record.generationError}</span>}{record.ticker && countWords(record.ticker) > 10 && <span className="error-inline">Over the 10-word limit.</span>}</div><div className="card-buttons"><button className="secondary" disabled={record.isGenerating} onClick={() => generate(record)}>{record.isGenerating ? "Generating…" : record.generatedTicker ? "Regenerate" : "Generate ticker"}</button><button className="approve" disabled={!canApprove(record)} onClick={() => setRecords((current) => current.map((item) => item.id === record.id ? { ...item, status: "approved" } : item))}>{record.status === "approved" ? "✓ Approved" : "Approve"}</button></div></div></div>
+              <div className="ticker-edit"><div className="ticker-label"><span>GENERATED TICKER</span><span className={countWords(record.ticker) > 10 ? "over" : ""}>{countWords(record.ticker)}/10 words</span></div><textarea value={record.ticker} onChange={(event) => updateTicker(record.id, event.target.value)} placeholder="Generate a ticker or write one manually…" rows={2} /><div className="card-footer"><div>{record.generationError && <span className="error-inline">{record.generationError}</span>}{record.ticker && countWords(record.ticker) > 10 && <span className="error-inline">Over the 10-word limit.</span>}</div><div className="card-buttons"><button className="secondary" onClick={() => openNewsPreview(record)}>▣ News panel</button><button className="secondary" disabled={record.isGenerating} onClick={() => generate(record)}>{record.isGenerating ? "Generating…" : record.generatedTicker ? "Regenerate" : "Generate ticker"}</button><button className="approve" disabled={!canApprove(record)} onClick={() => setRecords((current) => current.map((item) => item.id === record.id ? { ...item, status: "approved" } : item))}>{record.status === "approved" ? "✓ Approved" : "Approve"}</button></div></div></div>
             </article>
           ))}
         </section>
