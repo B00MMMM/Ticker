@@ -10,6 +10,7 @@ TickerDesk is a Malayalam-first newsroom workspace for turning source announceme
 - Demo mode for UI testing without pretending output is AI-generated
 - Live whitespace-token counter, editing, approval, and reorder controls
 - Dark broadcast preview and validated JSON export
+- Per-draft machine-readable JSON export for newsroom software
 
 ## Run locally
 
@@ -35,6 +36,8 @@ The application counts whitespace-separated tokens using the same `countWords` h
 
 Exports are UTF-8 JSON with `version`, an ISO-8601 `exportedAt`, and ordered `tickers` containing `id`, `order`, `sourceTitle`, `sourceAnnouncement`, `ticker`, and `status`.
 
+Each review card also has an `Export JSON` action for the individual draft. It downloads a UTF-8 file containing the stable ID, source fields, ticker text, status, whitespace-token word count, and export timestamp. This file is intended as a simple machine-readable handoff to newsroom software.
+
 ## Manual checklist
 
 1. Add Malayalam and English announcements and confirm they stay intact.
@@ -46,4 +49,4 @@ Exports are UTF-8 JSON with `version`, an ISO-8601 `exportedAt`, and ordered `ti
 
 ## Known limitations
 
-This is an in-memory session application: refreshing the page clears the queue. Automated factual checks cannot prove truth, and the application intentionally leaves final editorial verification to a human. Drag-and-drop, authentication, and persistence are outside the assessment scope.
+Drafts are persisted in the browser's local storage, so navigating to the preview or refreshing the page keeps the current queue on that browser. This is local-only persistence: clearing site data, using another browser/device, or opening a private window will not transfer drafts. Automated factual checks cannot prove truth, and the application intentionally leaves final editorial verification to a human. Drag-and-drop, authentication, and server-side persistence are outside the assessment scope.
